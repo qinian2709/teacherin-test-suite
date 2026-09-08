@@ -1,0 +1,22 @@
+stages:
+  - test
+
+api-test:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.40.0-jammy
+  script:
+    - npm ci
+    - npx playwright install --with-deps chromium
+    - npx playwright test tests/api
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+
+e2e-web-test:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.40.0-jammy
+  script:
+    - npm ci
+    - npx playwright install --with-deps chromium
+    - npx playwright test tests/e2e-web
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'

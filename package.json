@@ -1,0 +1,25 @@
+{
+  "name": "teacherin-test-suite",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TeacherIn 统一测试套件（API / Web E2E / 移动端 / 小程序 / 压测）",
+  "scripts": {
+    "test:api": "playwright test tests/api",
+    "test:e2e-web": "playwright test tests/e2e-web",
+    "test:e2e-mobile": "playwright test tests/e2e-mobile",
+    "test:miniprogram": "playwright test tests/miniprogram",
+    "run:api": "tsx scripts/run-api.ts",
+    "perf": "k6 run",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "@types/node": "^20.11.0",
+    "dotenv": "^16.3.1",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.0",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3"
+  }
+}
