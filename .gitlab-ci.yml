@@ -18,10 +18,11 @@
 #   手动 Run pipeline（web）：与 schedule 相同，可用变量覆盖环境和项目
 # Schedule 变量完整说明见 docs/pipeline-schedule-variables.md
 #
-# 报告发布到 Coolify 静态站点（推荐）：
-#   REPORT_PUBLISH_BASE_URL=https://teacherin-test-reports.coolify.eeo-inc.com
-#   REPORT_PUBLISH_GIT_REPO=<teacherin-test-reports.git>
+# 报告发布到同一套 Coolify 静态站（与 classinshop 共用仓，目录分开）：
+#   REPORT_PUBLISH_BASE_URL=https://classinshop-test-reports.coolify.eeo-inc.com
+#   REPORT_PUBLISH_GIT_REPO=https://skills.eeo-inc.com/kailiang.qiu/classinshop-test-reports.git
 #   REPORT_PUBLISH_GIT_TOKEN=<GitLab PAT，write_repository，Masked>
+# 发布路径：teacherin/{env}/all/latest/enhanced/（每环境只留最新）
 # 或 rsync/local 备选：
 #   REPORT_PUBLISH_RSYNC_TARGET / REPORT_PUBLISH_LOCAL_DIR
 #
@@ -33,6 +34,7 @@
 variables:
   PLAYWRIGHT_IMAGE: 'mcr.microsoft.com/playwright:v1.61.0-jammy'
   PNPM_VERSION: '10'
+  REPORT_PUBLISH_SERIES: teacherin
 
 workflow:
   rules:
