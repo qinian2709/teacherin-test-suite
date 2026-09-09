@@ -1,8 +1,10 @@
 import { test, expect } from '@playwright/test';
-import { loadEnv } from '../../config/env';
+import { env } from '@config';
+import { AdminHomePage } from './pages/AdminHomePage.js';
 
 test('管理后台首页可访问（zxjs）', async ({ page }) => {
-  const env = loadEnv();
   await page.goto(env.adminBaseURL);
+  const admin = new AdminHomePage(page);
+  await admin.waitForReady();
   await expect(page.locator('body')).toBeVisible();
 });

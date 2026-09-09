@@ -1,5 +1,29 @@
+# dependencies
 node_modules/
-playwright-report/
+
+# build / generated
+shared/api/schema.d.ts
+
+# test artifacts — everything lives under reports/
+reports/*
+!reports/.gitkeep
 test-results/
-.env
+playwright-report/
+blob-report/
+allure-results/
+.playwright/
+perf/results/
+
+# local env & secrets
 .env.local
+.env.*.local
+.env
+
+# logs
+logs/
+*.log
+
+# os / editor
+.DS_Store
+.idea/
+.vscode/

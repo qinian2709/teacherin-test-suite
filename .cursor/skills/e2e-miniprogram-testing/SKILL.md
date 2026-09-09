@@ -1,16 +1,18 @@
-# 小程序测试
+---
+name: e2e-miniprogram-testing
+description: Follow TeacherIn miniprogram automation conventions. Local only, requires WeChat DevTools.
+---
 
-对 teacherin-student-mnp（uni-app 小程序）写用例。
+# TeacherIn Miniprogram Testing
 
-## 现状
+Use for `tests/miniprogram/**`.
 
-小程序自动化需 minium / 微信开发者工具，Playwright 不直接支持，`tests/miniprogram` 为占位。
+小程序后端接口同样来自 **`teacherin-go-git`**，领域在 `routers/api/v1/wechat/`（以及 `api_wechat.go` 注册）。写接口断言走 `api-testing` skill，不要另编一套 path。
 
-## 步骤
+- Local only: `RUN_MP=1`，CI never runs this project
+- Prepare with `pnpm prepare:mp`（`MP_PROJECT` / `WX_DEVTOOLS_CLI`）
+- Placeholder specs should `test.skip` until automator is wired
 
-1. 确认页面：`pages/index|mine|order|orderDetail|pay|qrcodePage|address|global`。
-2. 接入 minium 后再补真实用例，脚本另起，不混入 Playwright。
-
-## 注意
-
-- 不要为占位目录写会误报的 Playwright 用例。
+```bash
+pnpm test:mp -- --env 14 --open
+```

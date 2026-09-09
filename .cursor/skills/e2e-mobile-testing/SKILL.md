@@ -1,13 +1,18 @@
-# 移动端 E2E 测试
+---
+name: e2e-mobile-testing
+description: Follow TeacherIn H5 E2E conventions for Playwright mobile specs, Page Objects, and runner commands.
+---
 
-对 teacherin-mobile-web（uni-app H5）写端到端用例。
+# TeacherIn E2E Mobile Testing
 
-## 步骤
+Use for `tests/e2e-mobile/**`.
 
-1. 确认页面归属：`pages/course|goods|index|manage|mine|order|promot|space|workbench`。
-2. 在 `tests/e2e-mobile/<页面>.spec.ts` 写用例。
-3. 视口已在 playwright.config.ts 设为 390×844，无需重复设置。
+H5 调用的后端接口来自 **`teacherin-go-git`**（`../teacherin-go-git`，`/api/v1`）。对照 path / 鉴权看 go-git `routers/api/v1/`，不要用页面 URL 当 API。接口用例走 `api-testing` skill。
 
-## 注意
+- Viewport comes from the `e2e-mobile` Playwright project
+- Logged-in flows import `./fixtures/authed.ts`
+- `baseURL` is `env.mobileBaseURL`
 
-- uni-app H5 为 SPA，断言等待 `body` / 关键元素可见。
+```bash
+pnpm test:e2e:mobile -- --env 14 --open
+```

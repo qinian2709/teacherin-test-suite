@@ -1,13 +1,19 @@
-# Web 主站 E2E 测试
+---
+name: e2e-web-testing
+description: Follow TeacherIn E2E Web testing conventions for Playwright specs, Page Objects, login-state fixtures, and runner commands.
+---
 
-对 teacherin-web（Vue3 + ant-design-vue）写端到端用例。
+# TeacherIn E2E Web Testing
 
-## 步骤
+Use for `tests/e2e-web/**`.
 
-1. 确认页面归属模块：`src/classx|course|home|lms|org|shops|user|pages`。
-2. 在 `tests/e2e-web/<模块>.spec.ts` 写用例，`page.goto('/')` 走 baseURL。
-3. 断言用 Playwright `expect`。
+主站页面打的后端接口来自 **`teacherin-go-git`**（`../teacherin-go-git`，`/api/v1`）。需要对照接口、登录态、请求头时，看 go-git 的 `routers/api/v1/` 与 swagger，不要用前端路径反推 API。接口用例本身走 `api-testing` skill。
 
-## 注意
+- Page operations belong in Page Objects extending `tests/e2e-web/pages/BasePage.ts`
+- Logged-in flows import `./fixtures/authed.ts` and use `authedHome`
+- Do not hardcode domains or tokens; read `@config`
+- Admin (zxjs) uses `env.adminBaseURL`
 
-- baseURL 由 `config/env.ts` 注入，`page.goto('/')` 即对应环境首页。
+```bash
+pnpm test:e2e:web -- --env 14 --file tests/e2e-web/smoke.spec.ts --open
+```
