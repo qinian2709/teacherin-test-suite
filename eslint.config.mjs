@@ -1,10 +1,25 @@
 import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
-export default [
+export default tseslint.config(
+  {
+    ignores: [
+      'node_modules/**',
+      'reports/**',
+      'test-results/**',
+      'playwright-report/**',
+      'allure-results/**',
+      'shared/api/schema.d.ts',
+      'perf/**',
+    ],
+  },
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    ignores: ['node_modules/', 'playwright-report/', 'test-results/'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+      'no-empty-pattern': 'off',
+    },
   },
-];
+);
