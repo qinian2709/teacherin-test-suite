@@ -32,7 +32,7 @@ import {
   pickNumericId,
   provisionPersonalCourse,
 } from '@shared';
-import { uniqueName } from '@shared';
+import { uniqueName, uniqueFilePath } from '@shared';
 
 test.describe('新建课程-课程标签联想-添加标签-获取标签列表-删除标签-删除课程', () => {
   test('联想 → 添加 → 列表 → 删除 @batch7', async ({ api, env, data }) => {
@@ -167,7 +167,7 @@ test.describe('在线文档&eppt @batch7', () => {
     annotateScenarioApis('在线文档&eppt');
     await fetchCovers(api, test.info(), env.apiBaseURL);
     const course = await provisionPersonalCourse(api, data);
-    const docPath = `${uniqueName('doc')}.nb`;
+    const docPath = `${uniqueFilePath('doc')}.nb`;
 
     const doc = await loggedPost(
       api,
@@ -239,7 +239,7 @@ test.describe('试卷相关 @batch7', () => {
       api,
       { testInfo: test.info(), apiBaseURL: env.apiBaseURL, logName: '新建文件夹' },
       Endpoints.repo.contentsGitkeep(course.repoId),
-      buildGitkeepPayload(`${uniqueName('paper')}/.gitkeep`),
+      buildGitkeepPayload(`${uniqueFilePath('paper')}/.gitkeep`),
     );
     expectApiWriteSuccess(folder.status, folder.body);
 

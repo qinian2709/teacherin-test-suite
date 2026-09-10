@@ -1,10 +1,7 @@
 /**
  * MeterSphere 组织成员/团队请求体（report c9b0f331…）。
  */
-
-function msTimeSuffix(): string {
-  return String(Date.now());
-}
+import { formatStandardTime } from '../utils/random.js';
 
 /** MS「邀请成员加入组织」：POST /orgs/{orgid}/members（数组） */
 export function buildInviteMemberPayload(
@@ -33,16 +30,15 @@ export function buildMemberPatchPayload(
   return {
     user_id: Number(userId),
     role,
-    username: username ?? `API编辑用户名称${msTimeSuffix()}`,
+    username: username ?? `API编辑用户名称${formatStandardTime()}`,
   };
 }
 
 /** MS「创建团队」：POST /orgs/{orgid}/teams（名称 ≤24 字） */
 export function buildCreateTeamPayload(name?: string): Record<string, unknown> {
-  const suffix = String(Date.now()).slice(-6);
   return {
     member_list: [] as number[],
-    name: name ?? `Api团${suffix}`,
+    name: name ?? `Api团${formatStandardTime()}`,
     description: '',
   };
 }

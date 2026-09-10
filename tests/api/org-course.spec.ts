@@ -68,7 +68,8 @@ test.describe('组织空间：创建课程+保存模板+模板创建课程+删�
     test.skip(!env.orgId, '未配置 TEST_ORG_ID');
     await fetchCovers(api, test.info(), env.apiBaseURL);
     const course = await provisionOrgCourse(api, data, env.orgId);
-    const templateName = `课程模版${Date.now()}`;
+    const saveTplPayload = buildSaveTemplatePayload(undefined, env.orgId);
+    const templateName = String(saveTplPayload.repo_name);
 
     const saveTpl = await loggedPost(
       api,
@@ -79,7 +80,7 @@ test.describe('组织空间：创建课程+保存模板+模板创建课程+删�
         maxDurationMs: 0,
       },
       Endpoints.repo.template(course.repoId),
-      buildSaveTemplatePayload(templateName, env.orgId),
+      saveTplPayload,
     );
     expectApiWriteSuccess(saveTpl.status, saveTpl.body);
     const templateId = await resolveTemplateIdAfterSave(

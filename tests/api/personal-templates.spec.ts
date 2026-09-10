@@ -15,7 +15,8 @@ test.describe('验证模版数量-获取个人/平台模版列表-重命名个�
     annotateScenarioApis('验证模版数量-获取个人/平台模版列表-重命名个人模版-删除模版');
     await fetchCovers(api, test.info(), env.apiBaseURL);
     const course = await provisionPersonalCourse(api, data);
-    const templateName = `课程模版${Date.now()}`;
+    const saveTplPayload = buildSaveTemplatePayload();
+    const templateName = String(saveTplPayload.repo_name);
 
     const saveTpl = await loggedPost(
       api,
@@ -26,7 +27,7 @@ test.describe('验证模版数量-获取个人/平台模版列表-重命名个�
         maxDurationMs: 0,
       },
       Endpoints.repo.template(course.repoId),
-      buildSaveTemplatePayload(templateName),
+      saveTplPayload,
     );
     expectApiWriteSuccess(saveTpl.status, saveTpl.body);
     const templateId = await resolveTemplateIdAfterSave(

@@ -1,10 +1,7 @@
 /**
  * MeterSphere 用户相关请求体。
  */
-
-function msTimeSuffix(): string {
-  return String(Date.now());
-}
+import { formatStandardTime } from '../utils/random.js';
 
 /** MS「更新修改个人信息」：POST /user/settings/patch */
 export function buildUserSettingsPatchPayload(
@@ -13,7 +10,7 @@ export function buildUserSettingsPatchPayload(
 ): Record<string, unknown> {
   return {
     username,
-    description: `patrol-${msTimeSuffix()}`,
+    description: `patrol-${formatStandardTime()}`,
     location: '1',
     avatar: '',
     topics: topicIds,

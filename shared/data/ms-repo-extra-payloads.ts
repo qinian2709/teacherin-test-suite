@@ -1,7 +1,7 @@
 /**
  * 课程副本、标签、云盘、文档、口语卡等 MS 请求体。
  */
-import { uniqueName } from '../utils/random.js';
+import { uniqueFilePath } from '../utils/random.js';
 import type { CloudDiskPick } from './file-helpers.js';
 
 /** POST /repos/{repoid}/copy */
@@ -37,14 +37,14 @@ export function buildNewbeeAuthPayload(
 
 /** POST /repos/{repoid}/newbee/create */
 export function buildNewbeeCreatePayload(fullPath?: string): Record<string, unknown> {
-  return { full_path: fullPath ?? `${uniqueName('doc')}.nb` };
+  return { full_path: fullPath ?? `${uniqueFilePath('doc')}.nb` };
 }
 
 /** POST /repos/{repoid}/eppt/new — tree_path 不含 .eppt 后缀（后端会自动拼接）。 */
 export function buildEpptNewPayload(treePath?: string, language = 'zh'): Record<string, unknown> {
   return {
     language,
-    tree_path: treePath ?? uniqueName('slide'),
+    tree_path: treePath ?? uniqueFilePath('slide'),
   };
 }
 
@@ -82,7 +82,7 @@ export function buildCosBatchPayload(
   treePath?: string,
   fileType?: string,
 ): Record<string, unknown> {
-  const base = treePath ?? uniqueName('cloud');
+  const base = treePath ?? uniqueFilePath('cloud');
   const resolvedType = fileType ?? (file.fileExt || 'pdf');
   return {
     file: [
