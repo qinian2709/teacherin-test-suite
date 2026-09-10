@@ -35,6 +35,32 @@ go-git 没有的接口不写。不要用前端或记忆发明 path。
 - 缺凭据自动 `skip`，不要让整套失败。
 - 用例创建的数据用 `data.register` 登记清理。
 
+## 外部步骤：默认只打 TeacherIn 后端
+
+接口测试 **默认全部** 用 `ApiHelper` / `loggedGet` / `loggedPost` 调 **`/api/v1`**（与页面里 `repositoryApi`、`fileApi` 一致）。
+
+### 本地上传课程文件（架构例外）
+
+go-git **没有**「把文件字节 POST 给 TeacherIn 后端」的路由。`POST /repos/{id}/cos` 只登记 **已在 COS 上的** `url`（见 `CreateCosFileV1` → `GetClassInFileID(ctx, url, ...)`）。
+
+页面本地上传同样是：
+
+| 步骤 | 是否 TeacherIn `/api/v1` | 接口 |
+|------|--------------------------|------|
+| 1 | ✅ 是 | `GET /file/token?flag=7` |
+| 2 | ❌ 否 | `PUT` 腾讯云 COS（文件字节不进 TeacherIn 服务） |
+| 3 | ✅ 是 | `POST /repos/{id}/cos` |
+
+因此：**不是 SDK 问题**——浏览器用 `cos-js-sdk` 也只是对 COS 做 HTTP PUT；测试里用 `shared/http/cos-direct-put.ts`（纯 HTTP），**禁止** 引 COS npm SDK。
+
+若用例要求 **100% 只调 TeacherIn 后端**（不要任何 COS 直传）：改用云盘链路，例如 `POST /repos/{id}/cos/batch`，不要走本地 fixture 上传。
+
+### 异步转换
+
+COS 登记后 ecos 异步生成，需轮询 `POST /repos/{id}/preview` 直到 `code !== 20144`，再调 transform（`waitForRepoFilePreviewReady`）。
+
+实现参考：`shared/data/repo-file-upload.ts`、`shared/http/cos-direct-put.ts`。
+
 ## 新增领域
 
 `teacherin-go-git` 新增领域目录（`routers/api/v1/<领域>`）时，在 `shared/api/endpoints.ts` 补端点常量，在 `shared/api/index.ts` 补最小封装，再在 `tests/api` 加冒烟用例。

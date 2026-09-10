@@ -2,7 +2,8 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
-    "ignoreDeprecations": "5.0"
+    "ignoreDeprecations": "5.0",
+    "ignoreDeprecations": "6.0"
   },
   "include": ["config", "shared", "tests", "scripts", "playwright.config.ts", "eslint.config.mjs"],
   "exclude": ["node_modules", "reports", "perf", "scripts/*.test.ts"]

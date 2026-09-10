@@ -37,18 +37,15 @@ Use this skill for `teacherin-test-suite/tests/api/**` and `shared/api/**`.
 
 ## Auth（Gitea / tigit）
 
-go-git 鉴权（见 `routers/api/v1/api.go` swagger meta）：
+主站巡检鉴权在 **框架**里完成，不是用例步骤：
 
-- Header：`Authorization`（`token <token>` 或 `Bearer <token>`，套件用 `formatAuthorizationHeader`）
-- Query：`token` / `access_token`（`shared/auth` 的 `tokenQuery`）
+- `TEST_ACCOUNT` → `POST /user/loginbywhiteuser` → session **Cookie**（`shared/auth/login.ts`）
+- `api` fixture 自动带 Cookie；spec **不要**再打 `loginbywhiteuser`
+- 可选补充：`API_TOKEN` / `TEST_TOKEN`（`Authorization`）
 
-凭据：
+缺 `TEST_ACCOUNT` 且无 token：依赖登录的 fixture **skip**，不要整套失败。
 
-- 主站：`API_TOKEN` / `TEST_TOKEN`
-- 缺凭据：依赖登录的 fixture **skip**，不要整套失败
-- 未配 token 的鉴权接口冒烟：预期 HTTP 401/403
-
-不要在 spec 里写死 token。
+不要在 spec 里写死 token / cookie。
 
 ## Response
 
@@ -77,6 +74,28 @@ Fixtures（`shared/fixtures/index.ts`）：
 ## Logs
 
 `loggedGet` / `loggedPost` / `attachApiCallLog`。Authorization 会脱敏。
+
+## TeacherIn backend first
+
+Default: every step uses `api` / `loggedGet` / `loggedPost` against **`/api/v1`** only.
+
+### Local course file upload (architectural exception)
+
+go-git has **no** route to POST file bytes to TeacherIn. `POST /repos/{id}/cos` only registers a file already in COS (`url` → `GetClassInFileID`).
+
+Same as the web app:
+
+| Step | TeacherIn `/api/v1`? | Call |
+|------|----------------------|------|
+| 1 | Yes | `GET /file/token?flag=7` |
+| 2 | **No** | `PUT` to Tencent COS (bytes never hit TeacherIn server) |
+| 3 | Yes | `POST /repos/{id}/cos` |
+
+Do **not** add COS npm SDKs. Step 2 is plain HTTP in `shared/http/cos-direct-put.ts`.
+
+If a case must be **100% backend API only** (no COS PUT): use cloud disk flow (`POST /repos/{id}/cos/batch`), not local fixture upload.
+
+Poll preview until `code !== 20144` before eppt transform (`waitForRepoFilePreviewReady`).
 
 ## Runner
 

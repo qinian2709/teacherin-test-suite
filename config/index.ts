@@ -14,6 +14,7 @@ export {
   formatAuthorizationHeader,
   hasApiCredential,
   hasAdminCredential,
+  sessionCookieHeader,
   studentAccount,
   merchantAccount,
 } from './accounts.js';

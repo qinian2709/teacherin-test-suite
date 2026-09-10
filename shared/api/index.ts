@@ -36,6 +36,9 @@ export const adminApi = {
 };
 
 export { Endpoints } from './endpoints.js';
+export { SCENARIO_CATALOG } from './scenario-catalog.js';
+export type { ScenarioApi, ScenarioCatalogItem } from './scenario-catalog.js';
+export { annotateScenarioApis } from './scenario-note.js';
 export { attachApiCallLog } from './report.js';
 export {
   loggedGet,

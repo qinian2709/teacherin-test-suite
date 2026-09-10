@@ -80,6 +80,14 @@ export interface EnvConfig {
   mobileBaseURL: string;
   /** E2E 关键步骤截图开关 */
   e2eStepScreenshots: boolean;
+  /** 巡检组织空间 orgid（普通组织，如创建组织课程） */
+  orgId: string;
+  /** 商家组织 orgid（MS personalMerchatOrgId；/merchant/{id} 的 id 需另从 org.merchant_id 解析） */
+  merchantId: string;
+  /** MS 默认被邀请成员手机号（与 TEST_ACCOUNT 区分） */
+  invitePhone: string;
+  /** 被邀请成员 nation_code */
+  inviteNationCode: string;
 }
 
 const webHost = get('WEB_HOST', get('BASE_URL', `https://${MAIN_HOST[TEST_ENV]}`)).replace(
@@ -101,6 +109,10 @@ export const env: EnvConfig = {
   adminBaseURL: get('ADMIN_BASE_URL', adminHost),
   mobileBaseURL: get('MOBILE_BASE_URL', webHost),
   e2eStepScreenshots: getBoolean('E2E_STEP_SCREENSHOTS'),
+  orgId: get('TEST_ORG_ID', get('ORG_ID')),
+  merchantId: get('TEST_MERCHANT_ID', get('MERCHANT_ID')),
+  invitePhone: get('TEST_INVITE_PHONE', '12300002501'),
+  inviteNationCode: get('TEST_INVITE_NATION_CODE', get('TEST_NATION_CODE', '86')),
 };
 
 /** 兼容旧调用 `loadEnv()`。 */

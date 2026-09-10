@@ -4,6 +4,7 @@ import {
   accounts,
   hasApiCredential,
   hasAdminCredential,
+  sessionCookieHeader,
   API_MAX_RESPONSE_MS,
 } from '../../config/index.js';
 import { resolveAuthTokens } from '../auth/login.js';
@@ -58,7 +59,7 @@ export const test = base.extend<ApiFixtures, ApiWorkerFixtures>({
 
   token: async ({ workerToken }, use) => {
     if (!hasApiCredential() && !workerToken) {
-      test.skip(true, '未配置主站鉴权凭据（API_TOKEN / TEST_TOKEN），跳过需登录用例');
+      test.skip(true, '未配置 TEST_ACCOUNT（白名单换 cookie）或 API_TOKEN，跳过需登录用例');
     }
     await use(workerToken);
   },
@@ -81,13 +82,14 @@ export const test = base.extend<ApiFixtures, ApiWorkerFixtures>({
 
   api: async ({ workerToken }, use) => {
     if (!hasApiCredential() && !workerToken) {
-      test.skip(true, '未配置主站鉴权凭据（API_TOKEN / TEST_TOKEN），跳过需登录用例');
+      test.skip(true, '未配置 TEST_ACCOUNT（白名单换 cookie）或 API_TOKEN，跳过需登录用例');
     }
     const helper = new ApiHelper(
       env.apiBaseURL,
       {
         ...browserHeaders(),
         ...authHeader(workerToken),
+        ...sessionCookieHeader(),
       },
       { maxResponseMs: API_MAX_RESPONSE_MS },
     );
