@@ -434,6 +434,21 @@ function openEnhancedReport(reportPaths: ReportPaths): number {
   return openFileInBrowser(reportPaths.enhancedIndex);
 }
 
+function ensureReporterPatched(logPrefix: string): void {
+  const patchScript = path.join(ROOT, 'scripts', 'patch-reporter.mjs');
+  const result = spawnSync(process.execPath, [patchScript], {
+    cwd: ROOT,
+    stdio: 'inherit',
+  });
+  if (result.error) {
+    console.warn(`${logPrefix} patch-reporter failed: ${result.error.message}`);
+    return;
+  }
+  if ((result.status ?? 1) !== 0) {
+    console.warn(`${logPrefix} patch-reporter exited with code ${result.status ?? 1}`);
+  }
+}
+
 async function notifyWeComIfRequested(
   options: Options,
   target: string,
@@ -501,6 +516,8 @@ async function main(): Promise<number> {
   if (options.allure) {
     cleanAllureOutput(reportPaths);
   }
+
+  ensureReporterPatched(logPrefix);
 
   const prepareExitCode = project === 'miniprogram' ? prepareMiniprogram(options.env) : 0;
   const testExitCode =

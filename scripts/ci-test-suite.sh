@@ -68,6 +68,14 @@ done
 if [ -n "$api_spec" ]; then
   cmd+=("$api_spec")
 fi
+if [ -n "${TEST_SUITE_GREP:-}" ]; then
+  cmd+=(--grep "$TEST_SUITE_GREP")
+  echo "[ci-test-suite] grep filter: ${TEST_SUITE_GREP}"
+fi
+if [ -n "${TEST_SUITE_FILE:-}" ]; then
+  cmd+=("$TEST_SUITE_FILE")
+  echo "[ci-test-suite] file filter: ${TEST_SUITE_FILE}"
+fi
 
 printf '[ci-test-suite] exec'
 printf ' %q' "${cmd[@]}"

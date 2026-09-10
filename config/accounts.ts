@@ -14,6 +14,11 @@ export interface Account {
 export interface Accounts {
   /** 主站 / go-git accessToken（API_TOKEN 或 TEST_TOKEN）。 */
   token: string;
+  /** 白名单登录下发的 session cookie（loginbywhiteuser）。 */
+  sessionCookie: string;
+  /** 巡检白名单手机号。 */
+  phone: string;
+  nationCode: string;
   /** 管理后台 / go-admin accessToken（ADMIN_API_TOKEN，缺省回落到主站 token）。 */
   adminToken: string;
   /** 小程序 UI 自动化 accessToken。 */
@@ -33,10 +38,13 @@ export interface Accounts {
 /** 运行时可被 resolveAuthTokens 回填 token，故使用可变对象。 */
 export const accounts: Accounts = {
   token: get('API_TOKEN', get('TEST_TOKEN')),
+  sessionCookie: '',
+  phone: get('TEST_ACCOUNT', get('ACCOUNT_USER', get('E2E_USERNAME'))),
+  nationCode: get('TEST_NATION_CODE', '86'),
   adminToken: get('ADMIN_API_TOKEN', get('API_TOKEN', get('TEST_TOKEN'))),
   miniprogramToken: get('MINIPROGRAM_TEST_TOKEN', get('API_TOKEN', get('TEST_TOKEN'))),
   e2e: {
-    username: get('E2E_USERNAME', get('ACCOUNT_USER')),
+    username: get('E2E_USERNAME', get('ACCOUNT_USER', get('TEST_ACCOUNT'))),
     password: get('E2E_PASSWORD', get('ACCOUNT_PASSWORD')),
   },
   adminE2e: {
@@ -62,7 +70,11 @@ export function merchantAccount(): Account {
 }
 
 export function hasApiCredential(): boolean {
-  return Boolean(accounts.token);
+  return Boolean(accounts.token || accounts.sessionCookie || accounts.phone);
+}
+
+export function sessionCookieHeader(): Record<string, string> {
+  return accounts.sessionCookie ? { Cookie: accounts.sessionCookie } : {};
 }
 
 export function hasAdminCredential(): boolean {
