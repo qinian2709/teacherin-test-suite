@@ -110,3 +110,51 @@ export function buildRepoContentsPayload(treePath = ''): Record<string, unknown>
 export function buildEpptTransformPayload(treePath: string, ref = 'master'): Record<string, unknown> {
   return { tree_path: treePath, ref, file_id: '0', file_sign: '', file_type: '' };
 }
+
+/** POST /repos/{repoid}/download — 单文件下载 */
+export function buildDownloadFilePayload(treePath: string, ref = 'master'): Record<string, unknown> {
+  return { tree_path: treePath, ref, file_sign: '' };
+}
+
+/** POST /repos/{repoid}/permissions/files — permission: 0=可下载, 1=不可下载 */
+export function buildSetFilePermissionPayload(
+  files: string[],
+  permission: 0 | 1 = 0,
+  dirs: string[] = [],
+): Record<string, unknown> {
+  return { files, dirs, permission };
+}
+
+/** POST /repos/{repoid}/permissions/batch */
+export function buildBatchGetFilePermissionPayload(
+  treePaths: string[],
+  ref = 'master',
+): Record<string, unknown> {
+  return { tree_paths: treePaths, ref };
+}
+
+/** POST /repos/{repoid}/cos/apply/batch — 从源课程另存文件 */
+export function buildCosApplyBatchPayload(
+  sourceRepoId: string,
+  files: string[],
+  targetPath = '',
+  ref = 'master',
+): Record<string, unknown> {
+  return {
+    source_repo_id: Number(sourceRepoId),
+    ref,
+    files,
+    dirs: [],
+    target_path: targetPath,
+  };
+}
+
+/** POST /repos/{repoid}/goods_content */
+export function buildGoodsContentPayload(treePath: string, preview = false): Record<string, unknown> {
+  return { treePath, preview };
+}
+
+/** POST /repos/{repoid}/goods/newbee/auth */
+export function buildGoodsNewbeeAuthPayload(fullPath: string): Record<string, unknown> {
+  return { full_path: fullPath };
+}

@@ -35,7 +35,7 @@ export {
   buildCollaboratorPatchPayload,
   buildTeamPromotePayload,
 } from './ms-repo-payloads.js';
-export { buildUserSettingsPatchPayload } from './ms-user-payloads.js';
+export { buildUserSettingsPatchPayload, buildUserBackgroundPayload, buildOrgApplyPayload, buildFeedbackPayload } from './ms-user-payloads.js';
 export {
   buildCreateUserLicensePayload,
   buildAddLicenseRepoPayload,
@@ -53,13 +53,22 @@ export {
   buildCosBatchPayload,
   buildRepoContentsPayload,
   buildEpptTransformPayload,
+  buildDownloadFilePayload,
+  buildSetFilePermissionPayload,
+  buildBatchGetFilePermissionPayload,
+  buildCosApplyBatchPayload,
+  buildGoodsContentPayload,
+  buildGoodsNewbeeAuthPayload,
 } from './ms-repo-extra-payloads.js';
 export {
   pickFirstTopicName,
   pickFirstCloudFile,
   pickFirstCloudFileByExt,
   pickCloudFolderId,
+  pickCloudSearchKeyword,
+  resolveImportableCloudFile,
   pickFirstRepoFilePath,
+  pickFirstRepoFullPath,
   pickFirstRepoTreePath,
   pickEpptTransformCallId,
 } from './file-helpers.js';
@@ -72,6 +81,8 @@ export {
   buildTeamMemberAddByAccountPayload,
   buildTeamMemberAddBatchPayload,
   buildTeamMemberRemovePayload,
+  buildOrgSettingPayload,
+  buildEditOrgPatchPayload,
 } from './ms-org-payloads.js';
 export {
   resolveUserByPhone,
@@ -117,6 +128,7 @@ export {
   pickInviteToken,
   pickCustomScoreId,
   pickLit2ModelId,
+  pickFirstLit2PlatformModelId,
   pickFirstCommunityId,
 } from './lms-helpers.js';
 export {

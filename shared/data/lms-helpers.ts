@@ -102,6 +102,11 @@ export function pickLit2ModelId(body: unknown, modelName?: string): string | und
   return undefined;
 }
 
+/** 从 GET /repos/lit2/platform 取第一个 modelId */
+export function pickFirstLit2PlatformModelId(body: unknown): string | undefined {
+  return pickLit2ModelId(body);
+}
+
 /** GET /community 取第一条动态 id */
 export function pickFirstCommunityId(body: unknown): string | undefined {
   if (!body || typeof body !== 'object') return undefined;

@@ -74,3 +74,26 @@ export function buildTeamMemberAddBatchPayload(userIds: string[]): Record<string
 export function buildTeamMemberRemovePayload(memberId: string): Record<string, unknown> {
   return { member_id: Number(memberId) };
 }
+
+/** POST /orgs/{orgid}/settings */
+export function buildOrgSettingPayload(
+  domain:
+    | 'member_can_publish'
+    | 'member_can_publish_fork'
+    | 'can_create'
+    | 'can_publish'
+    | 'can_delete',
+  enabled: boolean,
+): Record<string, unknown> {
+  return { domain, switch: enabled };
+}
+
+/** POST /orgs/{orgid}/patch — 仅改描述，避免动组织名 */
+export function buildEditOrgPatchPayload(description: string): Record<string, unknown> {
+  return {
+    username: null,
+    description,
+    avatar: null,
+    domain: null,
+  };
+}
