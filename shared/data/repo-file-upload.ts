@@ -15,7 +15,7 @@ import type { ApiHelper } from '../fixtures/api-helper.js';
 import { putObjectToCos } from '../http/cos-direct-put.js';
 import { SUCCESS_CODE, isEnvelope } from '../http/types.js';
 import { pickStringField } from './ids.js';
-import { uniqueName } from '../utils/random.js';
+import { uniqueFilePath } from '../utils/random.js';
 
 /** 与 errno.RepoCosFileConverting 一致：COS 登记后异步转 ecos，预览/转换需等待 */
 export const REPO_COS_FILE_CONVERTING = 20144;
@@ -124,7 +124,7 @@ export async function uploadLocalFileToRepo(
   const fixturePath = options.fixturePath ?? TRANSFORM_PPT_FIXTURE;
   const buffer = await readFile(fixturePath);
   const baseName = lowercaseFileSuffix(path.basename(fixturePath));
-  const treePath = options.treePath ?? `${uniqueName('ppt')}-${baseName}`;
+  const treePath = options.treePath ?? `${uniqueFilePath('ppt')}-${baseName}`;
 
   const tokenRes = await loggedGet(
     api,

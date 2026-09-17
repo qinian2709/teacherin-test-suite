@@ -1,7 +1,7 @@
 /**
  * 课程副本、标签、云盘、文档、口语卡等 MS 请求体。
  */
-import { uniqueName } from '../utils/random.js';
+import { uniqueFilePath } from '../utils/random.js';
 import type { CloudDiskPick } from './file-helpers.js';
 
 /** POST /repos/{repoid}/copy */
@@ -37,14 +37,14 @@ export function buildNewbeeAuthPayload(
 
 /** POST /repos/{repoid}/newbee/create */
 export function buildNewbeeCreatePayload(fullPath?: string): Record<string, unknown> {
-  return { full_path: fullPath ?? `${uniqueName('doc')}.nb` };
+  return { full_path: fullPath ?? `${uniqueFilePath('doc')}.nb` };
 }
 
 /** POST /repos/{repoid}/eppt/new — tree_path 不含 .eppt 后缀（后端会自动拼接）。 */
 export function buildEpptNewPayload(treePath?: string, language = 'zh'): Record<string, unknown> {
   return {
     language,
-    tree_path: treePath ?? uniqueName('slide'),
+    tree_path: treePath ?? uniqueFilePath('slide'),
   };
 }
 
@@ -82,7 +82,7 @@ export function buildCosBatchPayload(
   treePath?: string,
   fileType?: string,
 ): Record<string, unknown> {
-  const base = treePath ?? uniqueName('cloud');
+  const base = treePath ?? uniqueFilePath('cloud');
   const resolvedType = fileType ?? (file.fileExt || 'pdf');
   return {
     file: [
@@ -109,4 +109,52 @@ export function buildRepoContentsPayload(treePath = ''): Record<string, unknown>
 /** POST /repos/{repoid}/eppt/transform */
 export function buildEpptTransformPayload(treePath: string, ref = 'master'): Record<string, unknown> {
   return { tree_path: treePath, ref, file_id: '0', file_sign: '', file_type: '' };
+}
+
+/** POST /repos/{repoid}/download — 单文件下载 */
+export function buildDownloadFilePayload(treePath: string, ref = 'master'): Record<string, unknown> {
+  return { tree_path: treePath, ref, file_sign: '' };
+}
+
+/** POST /repos/{repoid}/permissions/files — permission: 0=可下载, 1=不可下载 */
+export function buildSetFilePermissionPayload(
+  files: string[],
+  permission: 0 | 1 = 0,
+  dirs: string[] = [],
+): Record<string, unknown> {
+  return { files, dirs, permission };
+}
+
+/** POST /repos/{repoid}/permissions/batch */
+export function buildBatchGetFilePermissionPayload(
+  treePaths: string[],
+  ref = 'master',
+): Record<string, unknown> {
+  return { tree_paths: treePaths, ref };
+}
+
+/** POST /repos/{repoid}/cos/apply/batch — 从源课程另存文件 */
+export function buildCosApplyBatchPayload(
+  sourceRepoId: string,
+  files: string[],
+  targetPath = '',
+  ref = 'master',
+): Record<string, unknown> {
+  return {
+    source_repo_id: Number(sourceRepoId),
+    ref,
+    files,
+    dirs: [],
+    target_path: targetPath,
+  };
+}
+
+/** POST /repos/{repoid}/goods_content */
+export function buildGoodsContentPayload(treePath: string, preview = false): Record<string, unknown> {
+  return { treePath, preview };
+}
+
+/** POST /repos/{repoid}/goods/newbee/auth */
+export function buildGoodsNewbeeAuthPayload(fullPath: string): Record<string, unknown> {
+  return { full_path: fullPath };
 }

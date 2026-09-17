@@ -16,7 +16,7 @@ import {
   MS_CREATE_ORG_MERCHANT_NAME_PREFIX,
   MS_CREATE_PERSONAL_FIELDS,
 } from './ms-course-templates.js';
-import { uniqueName } from '../utils/random.js';
+import { formatStandardTime } from '../utils/random.js';
 
 export type CourseOwnerKind = 'personal' | 'org' | 'merchant';
 
@@ -42,12 +42,6 @@ export interface CourseMediaUrls {
   backgroundUrl: string;
 }
 
-function msTimestampSuffix(): string {
-  const d = new Date();
-  const pad = (n: number) => String(n).padStart(2, '0');
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-}
-
 /** MS case 161caa41 + go-git 必填字段 */
 export function buildCreatePersonalRepoPayload(
   media: CourseMediaUrls,
@@ -55,7 +49,7 @@ export function buildCreatePersonalRepoPayload(
 ): Record<string, unknown> {
   return {
     ...MS_CREATE_PERSONAL_FIELDS,
-    name: `新建课程${uniqueName('')}`,
+    name: `新建课程${formatStandardTime()}`,
     cover_img: media.coverUrl,
     background: media.backgroundUrl,
     template_id: 0,
@@ -77,7 +71,7 @@ export function buildCreateOrgRepoPayload(
   return {
     ...MS_CREATE_ORG_FIELDS,
     orgid: orgId,
-    name: `${namePrefix}${uniqueName('')}`,
+    name: `${namePrefix}${formatStandardTime()}`,
     cover_img: media.coverUrl,
     background: media.backgroundUrl,
     template_id: 0,

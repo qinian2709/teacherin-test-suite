@@ -1,7 +1,10 @@
 /**
  * 云盘 / 标签 / 课程文件响应解析。
  */
+import { Endpoints } from '../api/endpoints.js';
+import type { ApiHelper } from '../fixtures/api-helper.js';
 import { pickNumericId, pickStringField } from './ids.js';
+import { INFRA_API_OPTS } from './infra.js';
 
 export function pickFirstTopicName(body: unknown): string | undefined {
   if (!body || typeof body !== 'object') return undefined;
@@ -116,6 +119,71 @@ export function pickCloudFolderId(body: unknown): number | undefined {
   const topId = data.topId ?? data.top_id;
   if (typeof topId === 'number' && topId > 0) return topId;
   return undefined;
+}
+
+const CLOUD_IMPORT_EXT_ORDER = ['ecos', 'pdf', 'ppt', 'pptx', 'doc', 'mp4', 'mov'];
+
+function pickImportableFromList(body: unknown, folderId: number): CloudDiskPick | undefined {
+  for (const ext of CLOUD_IMPORT_EXT_ORDER) {
+    const hit = pickFirstCloudFileByExt(body, folderId, [ext]);
+    if (hit) return hit;
+  }
+  return pickFirstCloudFile(body, folderId);
+}
+
+/** 从云盘根目录及首个子文件夹中解析可导入课程的文件。 */
+export async function resolveImportableCloudFile(api: ApiHelper): Promise<CloudDiskPick | undefined> {
+  const root = await api.get(Endpoints.cloud.list(0), { ...INFRA_API_OPTS, maxDurationMs: 0 });
+  if (!root.ok) return undefined;
+
+  const fromRoot = pickImportableFromList(root.body, 0);
+  if (fromRoot) return fromRoot;
+
+  const folderId = pickCloudFolderId(root.body);
+  if (!folderId) return undefined;
+
+  const sub = await api.get(Endpoints.cloud.list(folderId), { ...INFRA_API_OPTS, maxDurationMs: 0 });
+  if (!sub.ok) return undefined;
+  return pickImportableFromList(sub.body, folderId);
+}
+
+/** 云盘搜索关键词：优先 ASCII 片段，避免中文 kw 触发 ClassIn 侧 system error。 */
+export function pickCloudSearchKeyword(fileName: string): string | undefined {
+  const ascii = fileName.match(/[A-Za-z0-9]{3,}/)?.[0];
+  if (ascii) return ascii;
+  const trimmed = fileName.trim();
+  if (trimmed.length >= 2) return trimmed.slice(0, Math.min(8, trimmed.length));
+  return undefined;
+}
+
+function resolveRepoCosFullPath(row: Record<string, unknown>): string | undefined {
+  const fullPath = row.full_path ?? row.fullPath;
+  if (typeof fullPath === 'string' && fullPath.length > 0) return fullPath;
+
+  const pathValue = row.path ?? row.tree_path ?? row.origin_path;
+  const fileType = row.file_type ?? row.fileType;
+  if (typeof pathValue !== 'string' || pathValue.length === 0) return undefined;
+  if (typeof fileType !== 'string' || fileType.length === 0) return pathValue;
+
+  const ext = fileType.startsWith('.') ? fileType : `.${fileType}`;
+  return pathValue.endsWith(ext) ? pathValue : `${pathValue}${ext}`;
+}
+
+/** 从 contents 响应取 full_path（batch apply / 权限批量查询用）。 */
+export function pickFirstRepoFullPath(body: unknown, extHint = ''): string | undefined {
+  if (!body || typeof body !== 'object') return undefined;
+  const root = body as Record<string, unknown>;
+  const data = root.data ?? root;
+  const list = Array.isArray(data) ? data : [];
+  for (const item of list) {
+    if (!item || typeof item !== 'object') continue;
+    const row = item as Record<string, unknown>;
+    const resolved = resolveRepoCosFullPath(row);
+    if (!resolved) continue;
+    if (extHint && !resolved.toLowerCase().includes(extHint.toLowerCase())) continue;
+    return resolved;
+  }
+  return pickFirstRepoTreePath(body, extHint);
 }
 
 /** 从 POST /repos/{id}/contents 取匹配扩展名的 tree_path（默认去掉末级扩展名）。 */

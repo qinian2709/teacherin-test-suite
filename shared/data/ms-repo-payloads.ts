@@ -2,16 +2,12 @@
  * MeterSphere 课程操作请求体（report c9b0f331…）。
  * 08184247 新建文件夹、73082023 课程保存为模版、8f27fc35 重命名个人空间课程名称。
  */
-import { uniqueName } from '../utils/random.js';
-
-function msTimeSuffix(): string {
-  return String(Date.now());
-}
+import { formatStandardTime, uniqueFilePath } from '../utils/random.js';
 
 /** MS case 8f27fc35：POST /repos/{repoid}/name */
 export function buildRenameRepoPayload(name?: string): Record<string, unknown> {
   return {
-    name: name ?? `重命名${msTimeSuffix()}`,
+    name: name ?? `重命名${formatStandardTime()}`,
   };
 }
 
@@ -21,7 +17,7 @@ export function buildSaveTemplatePayload(
   orgId: number | string = 0,
 ): Record<string, unknown> {
   return {
-    repo_name: repoName ?? `课程模版${msTimeSuffix()}`,
+    repo_name: repoName ?? `课程模版${formatStandardTime()}`,
     preview_image: '',
     org_id: Number(orgId),
   };
@@ -35,14 +31,14 @@ export function buildChangeBackgroundPayload(backgroundUrl: string): Record<stri
 /** MS case 08184247：POST /repos/{repoid}/contents/gitkeep */
 export function buildGitkeepPayload(treePath?: string): Record<string, unknown> {
   return {
-    tree_path: treePath ?? `${uniqueName('dir')}/.gitkeep`,
+    tree_path: treePath ?? `${uniqueFilePath('dir')}/.gitkeep`,
     content: '',
   };
 }
 
 /** MS「重命名模版名称」：POST /repos/{repoid}/template/patch */
 export function buildTemplatePatchPayload(name?: string): Record<string, unknown> {
-  return { name: name ?? `模版重命名${msTimeSuffix()}` };
+  return { name: name ?? `模版重命名${formatStandardTime()}` };
 }
 
 /** MS「组织公共区导入课程」：POST /repos/{repoid}/import/orgs/{orgid} */
@@ -56,7 +52,7 @@ export function buildCreateFromTemplatePayload(
   name?: string,
 ): Record<string, unknown> {
   return {
-    name: name ?? `模板建课${msTimeSuffix()}`,
+    name: name ?? `模板建课${formatStandardTime()}`,
     template_id: Number(templateId),
     teams: [-1],
   };

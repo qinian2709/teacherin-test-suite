@@ -2429,5 +2429,16 @@ export const SCENARIO_CATALOG: ScenarioCatalogItem[] = [
         "name": "申请组织"
       }
     ]
+  },
+  {
+    "name": "意见反馈",
+    "flow": "other",
+    "apis": [
+      {
+        "method": "POST",
+        "path": "/system/feedback",
+        "name": "提交意见反馈"
+      }
+    ]
   }
 ];
