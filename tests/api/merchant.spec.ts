@@ -123,6 +123,20 @@ test.describe('商家-推广员：推广记录&分销记录 @batch5', () => {
     );
     expectApiGetSuccess(salers.status, salers.body);
 
+    const orders = await loggedGet(
+      api,
+      { testInfo: test.info(), apiBaseURL: env.apiBaseURL, logName: '分销记录' },
+      Endpoints.merchant.distributionOrder(merchantEntityId),
+      {
+        query: {
+          page: 1,
+          limit: 10,
+          orderNo: '',
+          repoName: '',
+          salerName: '',
+        },
+      },
+    );
     expectApiGetSuccess(orders.status, orders.body);
   });
 });
