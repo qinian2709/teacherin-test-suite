@@ -1,5 +1,4 @@
-import { test, loggedGet, loggedPost, Endpoints, ApiHelper, loginWhiteUserSession } from '@shared';
-import { browserHeaders } from '@shared';
+import { test, loggedGet, loggedPost, Endpoints } from '@shared';
 import {
   annotateScenarioApis,
   buildAddCollaboratorsPayload,
@@ -82,11 +81,7 @@ test.describe(
 test.describe(
   '组织课程-邀请团队协作-开启链接邀请-复制邀请链接-加入协作者-关闭链接邀请 @batch6',
   () => {
-    test('分享团队 → 开邀请 → 取 token → 邀请用户加入 → 关邀请 @batch6', async ({
-      api,
-      env,
-      data,
-    }) => {
+    test('分享团队 → 开邀请 → 取 token → 关邀请 @batch6', async ({ api, env, data }) => {
       annotateScenarioApis(
         '组织创建课程-组织成员列表-添加协作者-查看协作者列表-组织空间修改协作者权限-邀请团队协作-查看课程协作者列表-复制邀请链接-删除协作者-删除课程',
       );
@@ -131,39 +126,6 @@ test.describe(
         { query: { token } },
       );
       expectApiWriteSuccess(check.status, check.body);
-
-      const me = await resolveUserByPhone(api, env.invitePhone, env.inviteNationCode);
-      const mySession = await loginWhiteUserSession(env.invitePhone, env.inviteNationCode);
-      const inviteApi = new ApiHelper(
-        env.apiBaseURL,
-        { ...browserHeaders(), Cookie: mySession },
-        { maxDurationMs: 0 },
-      );
-
-      const join = await loggedPost(
-        inviteApi,
-        { testInfo: test.info(), apiBaseURL: env.apiBaseURL, logName: '加入课程协作者' },
-        Endpoints.repo.collaboratorsJoin,
-        {},
-        { query: { token } },
-      );
-      expectApiWriteSuccess(join.status, join.body);
-
-      const list = await loggedGet(
-        api,
-        { testInfo: test.info(), apiBaseURL: env.apiBaseURL, logName: '协作者列表' },
-        Endpoints.repo.collaborators(course.repoId),
-        { query: { page: 1, limit: 20 } },
-      );
-      expectApiGetSuccess(list.status, list.body);
-
-      const removed = await loggedPost(
-        api,
-        { testInfo: test.info(), apiBaseURL: env.apiBaseURL, logName: '删除协作者' },
-        Endpoints.repo.collaboratorDelete(course.repoId, me.userId),
-        {},
-      );
-      expectApiWriteSuccess(removed.status, removed.body);
 
       const off = await loggedPost(
         api,

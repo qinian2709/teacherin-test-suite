@@ -1,6 +1,7 @@
 import { accounts, env } from '../../config/index.js';
 import { Endpoints } from '../api/endpoints.js';
 import { browserHeaders } from '../http/browser-headers.js';
+import { isEnvelope, SUCCESS_CODE } from '../http/types.js';
 import { createLogger } from '../utils/logger.js';
 
 const log = createLogger('auth');
@@ -43,8 +44,20 @@ async function loginByWhiteUserForCookie(): Promise<void> {
     }),
   });
 
+  const rawBody = await res.text();
   if (!res.ok) {
     throw new Error(`白名单登录失败 HTTP ${res.status}（${env.apiBaseURL}${Endpoints.user.loginByWhiteUser}）`);
+  }
+  let parsed: unknown;
+  try {
+    parsed = rawBody ? JSON.parse(rawBody) : undefined;
+  } catch {
+    parsed = undefined;
+  }
+  if (isEnvelope(parsed) && parsed.code !== SUCCESS_CODE) {
+    const message =
+      (parsed as { message?: string }).message || parsed.msg || rawBody.slice(0, 160);
+    throw new Error(`白名单登录业务失败 code=${parsed.code} ${message}`);
   }
 
   const cookie = cookiesFromResponse(res);
@@ -94,8 +107,19 @@ export async function resolveAuthTokens(forceRefresh = false): Promise<void> {
   }
 
   resolvePromise = (async () => {
+    const presetCookie = (process.env.TEST_COOKIE ?? '').trim();
     if (accounts.phone) {
-      await loginByWhiteUserForCookie();
+      try {
+        await loginByWhiteUserForCookie();
+      } catch (error) {
+        if (!presetCookie) throw error;
+        accounts.sessionCookie = presetCookie;
+        const message = error instanceof Error ? error.message : String(error);
+        log.warn(`白名单登录失败，回落 TEST_COOKIE：${message}`);
+      }
+    } else if (presetCookie) {
+      accounts.sessionCookie = presetCookie;
+      log.info('主站：使用 TEST_COOKIE');
     } else if (accounts.token) {
       log.info('主站：未配 TEST_ACCOUNT，使用 API_TOKEN / TEST_TOKEN');
     } else {
