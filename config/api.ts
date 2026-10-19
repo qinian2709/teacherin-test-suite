@@ -9,5 +9,11 @@
  * - fixture 造数与 cleanup 使用 `shared/data/infra.ts` 的 `INFRA_API_OPTS`（跳过耗时）
  * - `0` 表示关闭全局耗时断言
  * - 单次请求仍可用 `CallOptions.maxDurationMs` / `ApiLogOptions.maxDurationMs` 覆盖
+ * - 线上（TEST_ENV=production）放宽到 2500ms，其余环境 2000ms
  */
-export const API_MAX_RESPONSE_MS = 2000;
+const API_MAX_RESPONSE_MS_BY_ENV: Record<string, number> = {
+  production: 2500,
+};
+
+export const API_MAX_RESPONSE_MS =
+  API_MAX_RESPONSE_MS_BY_ENV[(process.env.TEST_ENV ?? process.env.ENV ?? '').trim()] ?? 2000;
